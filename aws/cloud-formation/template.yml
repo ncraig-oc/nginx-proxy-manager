@@ -28,8 +28,6 @@ Resources:
             - HostPort: 443
               ContainerPort: 443
           Image: !Ref ImageUri
-          #Image: docker.io/jc21/nginx-proxy-manager:latest
-          #Image: docker.io/jc21/nginx-proxy-manager:github-pr-1839
           HealthCheck: 
              Command: ["CMD", "/bin/check-health"]
              Interval: 10
@@ -44,6 +42,8 @@ Resources:
               Value: 'true'
             - Name: AWS_EMF_AGENT_ENDPOINT
               Value: tcp://Prod-Redirect_sidecar-cloudwatch:25888
+            - Name: AWS_XRAY_DAEMON_ADDRESS
+              Value: Prod-Redirect_sidecar-xray:2000
           Secrets:
             - Name: DB_MYSQL_HOST
               ValueFrom: 'arn:aws:secretsmanager:us-east-1:413067109875:secret:prod/RedirectManager/Database-JczghG:host::'
@@ -66,6 +66,9 @@ Resources:
           Image: public.ecr.aws/xray/aws-xray-daemon:latest
           LogConfiguration:
             LogDriver: awslogs
+          PortMapper:
+            - Protocol: udp
+              ContainerPort: 2000 
             Options:
               awslogs-region: us-east-1
               awslogs-group: !Ref LogGroupService

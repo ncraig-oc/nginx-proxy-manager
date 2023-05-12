@@ -2,15 +2,20 @@
 
 set -e
 
-CYAN='\E[1;36m'
-BLUE='\E[1;34m'
-YELLOW='\E[1;33m'
-RED='\E[1;31m'
-RESET='\E[0m'
+#CYAN='\E[1;36m'
+#BLUE='\E[1;34m'
+#YELLOW='\E[1;33m'
+#RED='\E[1;31m'
+#RESET='\E[0m'
+CYAN=''
+BLUE=''
+YELLOW=''
+RED='*****'
+RESET='*****'
 export CYAN BLUE YELLOW RED RESET
 
-PUID=${PUID:-0}
-PGID=${PGID:-0}
+PUID=${PUID:-1000}
+PGID=${PGID:-1000}
 
 if [[ "$PUID" -ne '0' ]] && [ "$PGID" = '0' ]; then
 	# set group id to same as user id,

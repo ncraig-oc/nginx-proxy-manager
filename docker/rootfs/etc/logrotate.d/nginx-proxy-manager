@@ -1,7 +1,7 @@
-/data/logs/*_access.log /data/logs/*/access.log {
+/data/logs/*_access.log /data/logs/*.cloudwatch.log /data/logs/*/access.log {
     create 0644 root root
-    weekly
-    rotate 4
+    daily
+    rotate 1
     missingok
     notifempty
     compress
@@ -13,8 +13,8 @@
 
 /data/logs/*_error.log /data/logs/*/error.log {
     create 0644 root root
-    weekly
-    rotate 10
+    daily
+    rotate 1
     missingok
     notifempty
     compress

@@ -1,11 +1,12 @@
 #!/bin/bash
 
 echo "building frontend"
-./scripts/frontend-build
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 413067109875.dkr.ecr.us-east-1.amazonaws.com
+
+./scripts/ci/frontend-build
 read -n 1 -p "Press any key"
 echo "building backend"
 echo 'Checking Syntax ...'
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 413067109875.dkr.ecr.us-east-1.amazonaws.com
 
 IMAGE="owenscorning/aws-nginx-full"
 DOCKER_IMAGE="413067109875.dkr.ecr.us-east-1.amazonaws.com/${IMAGE}:certbot-node"
@@ -14,12 +15,14 @@ BUILD_VERSION=`cat .version`
 MAJOR_VERSION="2"
 BRANCH_LOWER="master"
 
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 413067109875.dkr.ecr.us-east-1.amazonaws.com
+
 docker pull ${DOCKER_IMAGE}
 docker run --rm \
 	-v "$(pwd)/backend:/app" \
 	-v "$(pwd)/global:/app/global" \
 	-w /app \
-	${IMAGE}:certbot-node \
+	"${DOCKER_IMAGE}" \
 	sh -c "yarn install && yarn eslint . && rm -rf node_modules"
 echo "-----------------"
 echo 'Docker Build ...'
@@ -32,4 +35,4 @@ docker build --pull --no-cache --squash --compress \
 	--build-arg BUILD_DATE="$(date '+%Y-%m-%d %T %Z')" \
 	.
 
-docker run -it  -p 80:80 -p 81:81 -v /mnt/c/Projects/nginx-proxy-manager/rootfolder:/data --name data  "${IMAGE}:fargate"
+docker run -it  -p 8080:80 -p 8081:81 -v /mnt/c/Projects/nginx-proxy-manager/rootfolder:/data --name data  "${FINISH_IMAGE}"
